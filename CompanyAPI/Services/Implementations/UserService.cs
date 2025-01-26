@@ -1,46 +1,66 @@
 ﻿using CompanyAPI.Data.Entities;
 using CompanyAPI.Data;
+using CompanyAPI.DTOs;
 using CompanyAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace CompanyAPI.Services.Implementations
+public class UserService : IUserService
 {
-    public class UserService : IUserService
+    private readonly ContextDAL _context;
+
+    public UserService(ContextDAL context)
     {
-        private readonly ContextDAL _context;
+        _context = context;
+    }
 
-        public UserService(ContextDAL context)
+    public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
+    {
+        var users = await _context.Users.ToListAsync();
+        return users.Select(u => new UserDto(u));
+    }
+
+    public async Task<UserDto> GetUserByIdAsync(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        return user == null ? null : new UserDto(user);
+    }
+
+    public async Task<UserDto> CreateUserAsync(CreateUserDto userDto)
+    {
+        var user = new User
         {
-            _context = context;
-        }
+            Username = userDto.Username,
+            Email = userDto.Email,
+            Role = userDto.Role,
+            IsActive = userDto.IsActive
+        };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+        return new UserDto(user);
+    }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync() =>
-            await _context.Users.ToListAsync();
+    public async Task<bool> UpdateUserAsync(int id, UpdateUserDto userDto)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null) return false;
 
-        public async Task<User> GetUserByIdAsync(int id) =>
-            await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        user.Username = userDto.Username;
+        user.Email = userDto.Email;
+        user.Role = userDto.Role;
+        user.IsActive = userDto.IsActive;
 
-        public async Task<User> CreateUserAsync(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return user;
-        }
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 
-        public async Task UpdateUserAsync(User user)
-        {
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
+    public async Task<bool> DeleteUserAsync(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null) return false;
 
-        public async Task DeleteUserAsync(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
-            {
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
-            }
-        }
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

@@ -1,11 +1,10 @@
 using CompanyAPI.Data;
-using CompanyAPI.Services.Implementations;
+using CompanyAPI.Middleware;
 using CompanyAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using CompanyAPI.Middleware;
 
 namespace CompanyAPI
 {

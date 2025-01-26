@@ -1,13 +1,14 @@
 ﻿using CompanyAPI.Data.Entities;
+using CompanyAPI.DTOs;
 
 namespace CompanyAPI.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<IEnumerable<User>> GetAllUsersAsync();
-        Task<User> GetUserByIdAsync(int id);
-        Task<User> CreateUserAsync(User user);
-        Task UpdateUserAsync(User user);
-        Task DeleteUserAsync(int id);
+        Task<IEnumerable<UserDto>> GetAllUsersAsync();
+        Task<UserDto> GetUserByIdAsync(int id);
+        Task<UserDto> CreateUserAsync(CreateUserDto userDto);
+        Task<bool> UpdateUserAsync(int id, UpdateUserDto userDto);
+        Task<bool> DeleteUserAsync(int id);
     }
 }
