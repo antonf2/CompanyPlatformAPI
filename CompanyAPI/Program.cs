@@ -1,4 +1,3 @@
-
 using CompanyAPI.Data;
 using CompanyAPI.Services.Implementations;
 using CompanyAPI.Services.Interfaces;
@@ -36,7 +35,7 @@ namespace CompanyAPI
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
