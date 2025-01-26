@@ -63,4 +63,10 @@ public class UserService : IUserService
         await _context.SaveChangesAsync();
         return true;
     }
+    public async Task<User> Authenticate(string username, string password)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Username == username && u.PasswordHash == password);
+        return user;
+    }
 }

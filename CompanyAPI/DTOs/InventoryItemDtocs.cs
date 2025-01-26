@@ -14,7 +14,7 @@ public class InventoryItemDto
     {
         if (item != null)
         {
-            Id = item.Id;
+            Id = item.ItemId;
             Name = item.Name;
             Description = item.Description;
             Quantity = item.Quantity;

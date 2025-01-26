@@ -14,7 +14,7 @@ public class UserDto
     {
         if (user != null)
         {
-            Id = user.Id;
+            Id = user.UserId;
             Username = user.Username;
             Email = user.Email;
             Role = user.Role;

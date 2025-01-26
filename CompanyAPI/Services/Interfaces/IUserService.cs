@@ -10,5 +10,6 @@ namespace CompanyAPI.Services.Interfaces
         Task<UserDto> CreateUserAsync(CreateUserDto userDto);
         Task<bool> UpdateUserAsync(int id, UpdateUserDto userDto);
         Task<bool> DeleteUserAsync(int id);
+        Task<User> Authenticate(string username, string password);
     }
 }

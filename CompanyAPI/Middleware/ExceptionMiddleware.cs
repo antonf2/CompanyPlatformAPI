@@ -22,7 +22,7 @@ namespace CompanyAPI.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong: {ex}");
+                _logger.LogError(ex, "Unhandled exception occurred while processing the request.");
                 await HandleExceptionAsync(context, ex);
             }
         }
@@ -35,7 +35,9 @@ namespace CompanyAPI.Middleware
             var result = JsonConvert.SerializeObject(new
             {
                 statusCode = context.Response.StatusCode,
-                message = "Internal Server Error from the middleware."
+                message = "Internal Server Error from the middleware.",
+                detailedError = exception.Message,
+                stackTrace = exception.StackTrace
             });
 
             return context.Response.WriteAsync(result);

@@ -7,7 +7,7 @@ namespace CompanyAPI.Data.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public int UserId { get; set; } 
 
         [Required]
         [StringLength(255)]
@@ -34,4 +34,5 @@ namespace CompanyAPI.Data.Entities
 
         public DateTime? UpdatedAt { get; set; }
     }
+
 }
