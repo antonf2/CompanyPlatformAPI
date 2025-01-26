@@ -1,46 +1,42 @@
 ﻿using Newtonsoft.Json;
 using System.Net;
 
-namespace CompanyAPI.Middleware
+public class ExceptionMiddleware
 {
-    public class ExceptionMiddleware
+    private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionMiddleware> _logger;
+
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionMiddleware> _logger;
+        _next = next;
+        _logger = logger;
+    }
 
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
+    public async Task Invoke(HttpContext context)
+    {
+        try
         {
-            _next = next;
-            _logger = logger;
+            await _next(context);
         }
-
-        public async Task Invoke(HttpContext context)
+        catch (Exception ex)
         {
-            try
-            {
-                await _next(context);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unhandled exception occurred while processing the request.");
-                await HandleExceptionAsync(context, ex);
-            }
+            _logger.LogError(ex, "Unhandled exception occurred while processing the request.");
+            await HandleExceptionAsync(context, ex);
         }
+    }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+    {
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+        var result = JsonConvert.SerializeObject(new
         {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            statusCode = context.Response.StatusCode,
+            message = "An error occurred while processing the request.",
+            detailedError = exception.InnerException?.Message ?? exception.Message
+        });
 
-            var result = JsonConvert.SerializeObject(new
-            {
-                statusCode = context.Response.StatusCode,
-                message = "Internal Server Error from the middleware.",
-                detailedError = exception.Message,
-                stackTrace = exception.StackTrace
-            });
-
-            return context.Response.WriteAsync(result);
-        }
+        return context.Response.WriteAsync(result);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using CompanyAPI.Data.Entities;
 using CompanyAPI.DTOs;
 using CompanyAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -42,10 +41,10 @@ namespace CompanyAPI.Controllers
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)
-            }),
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Role, user.Role)
+                }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = _configuration["Jwt:Issuer"],
@@ -56,5 +55,4 @@ namespace CompanyAPI.Controllers
             return tokenHandler.WriteToken(token);
         }
     }
-
 }

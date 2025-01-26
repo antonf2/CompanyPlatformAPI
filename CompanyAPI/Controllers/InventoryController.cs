@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 public class InventoryController : ControllerBase
 {
     private readonly IInventoryService _inventoryService;
-
     public InventoryController(IInventoryService inventoryService)
     {
         _inventoryService = inventoryService;

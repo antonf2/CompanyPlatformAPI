@@ -3,6 +3,8 @@ using CompanyAPI.Data;
 using CompanyAPI.DTOs;
 using CompanyAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using System.Security.Cryptography;
 
 public class UserService : IUserService
 {
@@ -65,8 +67,18 @@ public class UserService : IUserService
     }
     public async Task<User> Authenticate(string username, string password)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Username == username && u.PasswordHash == password);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        if (user == null || !VerifyPasswordHash(password, user.PasswordHash))
+            return null;
         return user;
+    }
+
+    private bool VerifyPasswordHash(string password, string storedHash)
+    {
+        using (var sha256 = SHA256.Create())
+        {
+            var computedHash = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return Convert.ToBase64String(computedHash) == storedHash;
+        }
     }
 }
