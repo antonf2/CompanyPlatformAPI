@@ -21,12 +21,12 @@ namespace CompanyAPI
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<ContextDAL>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("ContextDAL")));
 
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IInventoryService, InventoryService>();
 
-            builder.Services.AddAuthentication(options =>
+            _ = builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
