@@ -1,25 +1,26 @@
 ﻿using CompanyAPI.Data.Entities;
-using System.Security.Claims;
-
-public class UserDto
+namespace CompanyAPI.DTOs
 {
-    public int Id { get; set; }
-    public string Username { get; set; }
-    public string Email { get; set; }
-    public string Role { get; set; }
-    public bool IsActive { get; set; }
-
-    public UserDto() { }
-
-    public UserDto(User user)
+    public class UserDto
     {
-        if (user != null)
+        public int Id { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Role { get; set; }
+        public bool IsActive { get; set; }
+
+        public UserDto() { }
+
+        public UserDto(User user)
         {
-            Id = user.UserId;
-            Username = user.Username;
-            Email = user.Email;
-            Role = user.Role;
-            IsActive = user.IsActive;
+            if (user != null)
+            {
+                Id = user.UserId;
+                Username = user.Username;
+                Email = user.Email;
+                Role = user.Role;
+                IsActive = user.IsActive;
+            }
         }
     }
 }
