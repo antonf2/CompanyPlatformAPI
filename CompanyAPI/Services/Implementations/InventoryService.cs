@@ -1,66 +1,108 @@
-﻿using CompanyAPI.Data.Entities;
-using CompanyAPI.Data;
+﻿using CompanyAPI.Data;
+using CompanyAPI.Data.Entities;
 using CompanyAPI.DTOs;
 using CompanyAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-public class InventoryService : IInventoryService
+namespace CompanyAPI.Services.Implementations
 {
-    private readonly ContextDAL _context;
-
-    public InventoryService(ContextDAL context)
+    public class InventoryService : IInventoryService
     {
-        _context = context;
-    }
+        private readonly ContextDAL _context;
 
-    public async Task<IEnumerable<InventoryItemDto>> GetAllItemsAsync()
-    {
-        var items = await _context.InventoryItems.ToListAsync();
-        return items.Select(i => new InventoryItemDto(i));
-    }
-
-    public async Task<InventoryItemDto> GetItemByIdAsync(int id)
-    {
-        var item = await _context.InventoryItems.FindAsync(id);
-        return item == null ? null : new InventoryItemDto(item);
-    }
-
-    public async Task<InventoryItemDto> CreateItemAsync(CreateInventoryItemDto itemDto)
-    {
-        var item = new InventoryItem
+        public InventoryService(ContextDAL context)
         {
-            Name = itemDto.Name,
-            Description = itemDto.Description,
-            Quantity = itemDto.Quantity,
-            Location = itemDto.Location
-        };
-        _context.InventoryItems.Add(item);
-        await _context.SaveChangesAsync();
-        return new InventoryItemDto(item);
-    }
+            _context = context;
+        }
 
-    public async Task<bool> UpdateItemAsync(int id, UpdateInventoryItemDto itemDto)
-    {
-        var item = await _context.InventoryItems.FindAsync(id);
-        if (item == null) return false;
+        public async Task<IEnumerable<InventoryItemDto>> GetAllItemsAsync()
+        {
+            var items = await _context.InventoryItems.ToListAsync();
+            return items.Select(item => new InventoryItemDto
+            {
+                ItemId = item.ItemId,
+                Name = item.Name,
+                Description = item.Description,
+                Quantity = item.Quantity,
+                Location = item.Location,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
 
-        item.Name = itemDto.Name;
-        item.Description = itemDto.Description;
-        item.Quantity = itemDto.Quantity;
-        item.Location = itemDto.Location;
+        public async Task<InventoryItemDto> GetItemByIdAsync(int id)
+        {
+            var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ItemId == id);
+            if (item == null) return null;
 
-        _context.InventoryItems.Update(item);
-        await _context.SaveChangesAsync();
-        return true;
-    }
+            return new InventoryItemDto
+            {
+                ItemId = item.ItemId,
+                Name = item.Name,
+                Description = item.Description,
+                Quantity = item.Quantity,
+                Location = item.Location,
+                CreatedAt = item.CreatedAt,
+                UpdatedAt = item.UpdatedAt ?? DateTime.MinValue
+            };
+        }
 
-    public async Task<bool> DeleteItemAsync(int id)
-    {
-        var item = await _context.InventoryItems.FindAsync(id);
-        if (item == null) return false;
+        public async Task<InventoryItemDto> CreateItemAsync(CreateInventoryItemDto itemDto)
+        {
+            var item = new InventoryItem
+            {
+                Name = itemDto.Name,
+                Description = itemDto.Description,
+                Quantity = itemDto.Quantity,
+                Location = itemDto.Location,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-        _context.InventoryItems.Remove(item);
-        await _context.SaveChangesAsync();
-        return true;
+            _context.InventoryItems.Add(item);
+            await _context.SaveChangesAsync();
+
+            return new InventoryItemDto
+            {
+                ItemId = item.ItemId,
+                Name = item.Name,
+                Description = item.Description,
+                Quantity = item.Quantity,
+                Location = item.Location,
+                CreatedAt = item.CreatedAt,
+                UpdatedAt = item.UpdatedAt ?? DateTime.MinValue
+            };
+        }
+
+        public async Task<bool> UpdateItemAsync(int id, UpdateInventoryItemDto itemDto)
+        {
+            var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ItemId == id);
+
+            if (item == null)
+                return false;
+
+            item.Name = itemDto.Name;
+            item.Description = itemDto.Description;
+            item.Quantity = itemDto.Quantity;
+            item.Location = itemDto.Location;
+            item.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> DeleteItemAsync(int id)
+        {
+            var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ItemId == id);
+
+            if (item == null)
+                return false;
+
+            _context.InventoryItems.Remove(item);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

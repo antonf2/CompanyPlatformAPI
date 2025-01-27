@@ -73,12 +73,42 @@ public class UserService : IUserService
         return user;
     }
 
-    private bool VerifyPasswordHash(string password, string storedHash)
+    public async Task<User> CreateUser(CreateUserDto userDto)
+    {
+        var user = new User
+        {
+            Username = userDto.Username,
+            PasswordHash = HashPassword(userDto.Password),
+            Email = userDto.Email,
+            Role = userDto.Role,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+        return user;
+    }
+
+    public string HashPassword(string password)
     {
         using (var sha256 = SHA256.Create())
         {
-            var computedHash = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(computedHash) == storedHash;
+            var hashedPassword = Encoding.UTF8.GetBytes(password);
+
+            for (int i = 0; i < 1000; i++)
+            {
+                hashedPassword = sha256.ComputeHash(hashedPassword);
+            }
+
+            return Convert.ToBase64String(hashedPassword);
         }
+    }
+
+    private bool VerifyPasswordHash(string password, string storedHash)
+    {
+        var hashedPassword = HashPassword(password);
+        return hashedPassword == storedHash;
     }
 }

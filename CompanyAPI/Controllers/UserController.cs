@@ -1,7 +1,10 @@
-﻿using CompanyAPI.DTOs;
+﻿using CompanyAPI.Data.Entities;
+using CompanyAPI.DTOs;
 using CompanyAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
+using System.Security.Claims;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -55,9 +58,11 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteUser(int id)
     {
+        var role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        Console.WriteLine($"Role: {role}, UserId: {userId}");
         var success = await _userService.DeleteUserAsync(id);
         if (!success)
             return NotFound($"User with ID {id} not found.");

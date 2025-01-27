@@ -3,63 +3,61 @@ using CompanyAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-[Route("api/[controller]")]
-[Authorize]
-public class InventoryController : ControllerBase
+namespace CompanyAPI.Controllers
 {
-    private readonly IInventoryService _inventoryService;
-    public InventoryController(IInventoryService inventoryService)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class InventoryController : ControllerBase
     {
-        _inventoryService = inventoryService;
-    }
+        private readonly IInventoryService _inventoryService;
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<InventoryItemDto>>> GetAllItems()
-    {
-        var items = await _inventoryService.GetAllItemsAsync();
-        return Ok(items);
-    }
+        public InventoryController(IInventoryService inventoryService)
+        {
+            _inventoryService = inventoryService;
+        }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<InventoryItemDto>> GetItem(int id)
-    {
-        var itemDto = await _inventoryService.GetItemByIdAsync(id);
-        if (itemDto == null)
-            return NotFound($"Item with ID {id} not found.");
-        return Ok(itemDto);
-    }
+        [HttpGet]
+        public async Task<IActionResult> GetAllItems()
+        {
+            var items = await _inventoryService.GetAllItemsAsync();
+            return Ok(items);
+        }
 
-    [HttpPost]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<InventoryItemDto>> CreateItem([FromBody] CreateInventoryItemDto itemDto)
-    {
-        var createdItem = await _inventoryService.CreateItemAsync(itemDto);
-        return CreatedAtAction(nameof(GetItem), new { id = createdItem.Id }, createdItem);
-    }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetItemById(int id)
+        {
+            var item = await _inventoryService.GetItemByIdAsync(id);
+            if (item == null)
+                return NotFound();
 
-    [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateItem(int id, [FromBody] UpdateInventoryItemDto itemDto)
-    {
-        if (id != itemDto.Id)
-            return BadRequest("ID mismatch in the URL and body.");
+            return Ok(item);
+        }
 
-        var success = await _inventoryService.UpdateItemAsync(id, itemDto);
-        if (!success)
-            return NotFound($"Item with ID {id} not found.");
+        [HttpPost]
+        public async Task<IActionResult> CreateItem([FromBody] CreateInventoryItemDto itemDto)
+        {
+            var item = await _inventoryService.CreateItemAsync(itemDto);
+            return CreatedAtAction(nameof(GetItemById), new { id = item.ItemId }, item);
+        }
 
-        return NoContent();
-    }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateItem(int id, [FromBody] UpdateInventoryItemDto itemDto)
+        {
+            var item = await _inventoryService.UpdateItemAsync(id, itemDto);
+            if (item == null)
+                return NotFound();
 
-    [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteItem(int id)
-    {
-        var success = await _inventoryService.DeleteItemAsync(id);
-        if (!success)
-            return NotFound($"Item with ID {id} not found.");
+            return Ok(item);
+        }
 
-        return NoContent();
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            var result = await _inventoryService.DeleteItemAsync(id);
+            if (!result)
+                return NotFound();
+
+            return NoContent();
+        }
     }
 }
