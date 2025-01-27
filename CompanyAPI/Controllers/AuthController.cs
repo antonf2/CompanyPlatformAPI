@@ -24,7 +24,9 @@ public class AuthController : ControllerBase
     {
         var user = await _userService.Authenticate(loginDto.Username, loginDto.Password);
         if (user == null)
+        {
             return Unauthorized("Invalid credentials.");
+        }
 
         var userDto = new UserDto
         {
@@ -48,7 +50,7 @@ public class AuthController : ControllerBase
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim("role", user.Role)
+                new Claim(ClaimTypes.Role, user.Role)
             }),
             Expires = DateTime.UtcNow.AddHours(2),
             Issuer = _configuration["Jwt:Issuer"],

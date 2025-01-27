@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,37 +46,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidateAudience = true,
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            RoleClaimType = "role", // Ensuring consistency
-            NameClaimType = "nameid"
-        };
-
-        options.Events = new JwtBearerEvents
-        {
-            OnTokenValidated = context =>
-            {
-                Console.WriteLine("Token validated successfully.");
-                var claims = context.Principal?.Claims.Select(c => $"{c.Type}: {c.Value}").ToList();
-                Console.WriteLine("Extracted Claims:");
-                claims?.ForEach(Console.WriteLine);
-                return Task.CompletedTask;
-            },
-            OnAuthenticationFailed = context =>
-            {
-                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
-                return Task.CompletedTask;
-            },
-            OnChallenge = context =>
-            {
-                if (context.AuthenticateFailure != null)
-                {
-                    Console.WriteLine($"Authentication challenge failed: {context.AuthenticateFailure.Message}");
-                }
-                else
-                {
-                    Console.WriteLine("Authentication challenge failed: No failure message");
-                }
-                return Task.CompletedTask;
-            }
+            RoleClaimType = ClaimTypes.Role 
         };
     });
 
