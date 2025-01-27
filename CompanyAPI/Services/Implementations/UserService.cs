@@ -110,12 +110,17 @@ public class UserService : IUserService
     {
         using (var sha256 = SHA256.Create())
         {
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            var hashedBytes = Encoding.UTF8.GetBytes(password);
+            for (int i = 0; i < 1000; i++)
+            {
+                hashedBytes = sha256.ComputeHash(hashedBytes);
+            }
+
             return BitConverter.ToString(hashedBytes).Replace("-", "").ToLowerInvariant();
         }
     }
 
-    private bool VerifyPasswordHash(string password, string storedHash)
+        private bool VerifyPasswordHash(string password, string storedHash)
     {
         var hashedPassword = HashPassword(password);
         return hashedPassword == storedHash;
