@@ -7,9 +7,10 @@ namespace CompanyAPI.Services.Interfaces
     {
         Task<IEnumerable<UserDto>> GetAllUsersAsync();
         Task<UserDto> GetUserByIdAsync(int id);
-        Task<UserDto> CreateUserAsync(CreateUserDto userDto);
+        Task<bool> CreateUserAsync(CreateUserDto userDto);
         Task<bool> UpdateUserAsync(int id, UpdateUserDto userDto);
         Task<bool> DeleteUserAsync(int id);
+        Task<bool> UserExists(string username);
         Task<User> Authenticate(string username, string password);
         Task<User> CreateUser(CreateUserDto userDto);
     }

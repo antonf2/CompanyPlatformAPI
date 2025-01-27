@@ -1,10 +1,10 @@
-﻿using CompanyAPI.Data.Entities;
-using CompanyAPI.Data;
+﻿using CompanyAPI.Data;
+using CompanyAPI.Data.Entities;
 using CompanyAPI.DTOs;
 using CompanyAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 
 public class UserService : IUserService
 {
@@ -27,18 +27,27 @@ public class UserService : IUserService
         return user == null ? null : new UserDto(user);
     }
 
-    public async Task<UserDto> CreateUserAsync(CreateUserDto userDto)
+    public async Task<bool> CreateUserAsync(CreateUserDto userDto)
     {
+        if (await UserExists(userDto.Username))
+        {
+            return false; // User already exists
+        }
+
         var user = new User
         {
             Username = userDto.Username,
+            PasswordHash = HashPassword(userDto.Password),
             Email = userDto.Email,
             Role = userDto.Role,
-            IsActive = userDto.IsActive
+            IsActive = userDto.IsActive,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
+
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
-        return new UserDto(user);
+        return true;
     }
 
     public async Task<bool> UpdateUserAsync(int id, UpdateUserDto userDto)
@@ -65,13 +74,6 @@ public class UserService : IUserService
         await _context.SaveChangesAsync();
         return true;
     }
-    public async Task<User> Authenticate(string username, string password)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-        if (user == null || !VerifyPasswordHash(password, user.PasswordHash))
-            return null;
-        return user;
-    }
 
     public async Task<User> CreateUser(CreateUserDto userDto)
     {
@@ -91,18 +93,25 @@ public class UserService : IUserService
         return user;
     }
 
-    public string HashPassword(string password)
+    public async Task<bool> UserExists(string username)
+    {
+        return await _context.Users.AnyAsync(u => u.Username == username);
+    }
+
+    public async Task<User> Authenticate(string username, string password)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        if (user == null || !VerifyPasswordHash(password, user.PasswordHash))
+            return null;
+        return user;
+    }
+
+    private string HashPassword(string password)
     {
         using (var sha256 = SHA256.Create())
         {
-            var hashedPassword = Encoding.UTF8.GetBytes(password);
-
-            for (int i = 0; i < 1000; i++)
-            {
-                hashedPassword = sha256.ComputeHash(hashedPassword);
-            }
-
-            return Convert.ToBase64String(hashedPassword);
+            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return BitConverter.ToString(hashedBytes).Replace("-", "").ToLowerInvariant();
         }
     }
 

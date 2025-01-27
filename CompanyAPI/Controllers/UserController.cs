@@ -34,11 +34,26 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    [AllowAnonymous]
+    [AllowAnonymous] 
     public async Task<ActionResult<UserDto>> CreateUser([FromBody] CreateUserDto userDto)
     {
-        var createdUser = await _userService.CreateUserAsync(userDto);
-        return CreatedAtAction(nameof(GetUser), new { id = createdUser.Id }, createdUser);
+        if (string.IsNullOrWhiteSpace(userDto.Username) || string.IsNullOrWhiteSpace(userDto.Password) || string.IsNullOrWhiteSpace(userDto.Email))
+        {
+            return BadRequest("Username, password, and email are required.");
+        }
+
+        if (await _userService.UserExists(userDto.Username))
+        {
+            return BadRequest("Username already exists.");
+        }
+
+        var createdUser = await _userService.CreateUser(userDto);
+        if (createdUser == null)
+        {
+            return BadRequest("User could not be created.");
+        }
+
+        return CreatedAtAction(nameof(GetUser), new { id = createdUser.UserId }, new UserDto(createdUser));
     }
 
     [HttpPut("{id}")]
@@ -58,9 +73,6 @@ public class UserController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        var role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        Console.WriteLine($"Role: {role}, UserId: {userId}");
         var success = await _userService.DeleteUserAsync(id);
         if (!success)
             return NotFound($"User with ID {id} not found.");
