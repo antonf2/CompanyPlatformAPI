@@ -47,6 +47,29 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             RoleClaimType = "role",
             NameClaimType = "nameid"
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token validated successfully.");
+                var claims = context.Principal?.Claims.Select(c => $"{c.Type}: {c.Value}").ToList();
+                Console.WriteLine("Claims:");
+                claims?.ForEach(Console.WriteLine);
+
+                return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                Console.WriteLine("Authentication challenge triggered.");
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddScoped<IUserService, UserService>();
