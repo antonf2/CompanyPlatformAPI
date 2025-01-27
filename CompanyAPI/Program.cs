@@ -1,4 +1,5 @@
 using CompanyAPI.Data;
+using CompanyAPI.Middleware;
 using CompanyAPI.Services.Implementations;
 using CompanyAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
