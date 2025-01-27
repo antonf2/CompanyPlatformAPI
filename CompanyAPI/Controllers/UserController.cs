@@ -34,7 +34,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    [AllowAnonymous] 
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<UserDto>> CreateUser([FromBody] CreateUserDto userDto)
     {
         if (string.IsNullOrWhiteSpace(userDto.Username) || string.IsNullOrWhiteSpace(userDto.Password) || string.IsNullOrWhiteSpace(userDto.Email))
@@ -57,7 +57,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [AllowAnonymous]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto userDto)
     {
         if (id != userDto.Id)
@@ -71,6 +71,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> DeleteUser(int id)
     {
         var success = await _userService.DeleteUserAsync(id);
