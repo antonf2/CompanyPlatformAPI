@@ -1,4 +1,5 @@
 ﻿using CompanyAPI.Data.Entities;
+using System.Security.Claims;
 
 public class UserDto
 {
