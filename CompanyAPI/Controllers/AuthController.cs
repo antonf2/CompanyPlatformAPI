@@ -48,7 +48,7 @@ public class AuthController : ControllerBase
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim("role", user.Role)
+                new Claim("role", user.Role) // Adjusted to "role" instead of ClaimTypes.Role
             }),
             Expires = DateTime.UtcNow.AddHours(2),
             Issuer = _configuration["Jwt:Issuer"],
