@@ -9,12 +9,16 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.AddControllers();
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "CompanyAPI", Version = "v1" });
 });
+
 
 builder.Services.AddDbContext<ContextDAL>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ContextDAL"),
@@ -22,6 +26,7 @@ builder.Services.AddDbContext<ContextDAL>(options =>
                 .CommandTimeout(180)
                 .EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null)
                 .MigrationsHistoryTable("__EFMigrationsHistory", "HumanResources")));
+
 
 builder.Services.AddCors(options =>
 {
@@ -45,7 +50,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidAudience = builder.Configuration["Jwt:Audience"],
             RoleClaimType = "role",
-            NameClaimType = "nameid"
+            NameClaimType = "nameid" 
         };
 
         options.Events = new JwtBearerEvents
@@ -54,35 +59,36 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             {
                 Console.WriteLine("Token validated successfully.");
                 var claims = context.Principal?.Claims.Select(c => $"{c.Type}: {c.Value}").ToList();
-                Console.WriteLine("Claims:");
+                Console.WriteLine("Extracted Claims:");
                 claims?.ForEach(Console.WriteLine);
 
                 return Task.CompletedTask;
             },
             OnAuthenticationFailed = context =>
             {
-                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
                 return Task.CompletedTask;
             },
             OnChallenge = context =>
             {
-                Console.WriteLine("Authentication challenge triggered.");
                 return Task.CompletedTask;
             }
         };
     });
+
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 
 var app = builder.Build();
 
+
 app.UseCors("CorsPolicy");
 app.UseSwagger();
 app.UseSwaggerUI();
-app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>(); 
 app.UseHttpsRedirection();
 app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthorization(); 
 app.MapControllers();
+
 app.Run();

@@ -1,5 +1,4 @@
-﻿using CompanyAPI.Data.Entities;
-using CompanyAPI.DTOs;
+﻿using CompanyAPI.DTOs;
 using CompanyAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
