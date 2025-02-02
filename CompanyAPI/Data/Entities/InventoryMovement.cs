@@ -10,10 +10,10 @@ namespace CompanyAPI.Data.Entities
         public int MovementId { get; set; }
 
         [Required]
-        public int ItemId { get; set; }
+        public string ItemId { get; set; }
 
         [Required]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         [Required]
         [StringLength(50)]
