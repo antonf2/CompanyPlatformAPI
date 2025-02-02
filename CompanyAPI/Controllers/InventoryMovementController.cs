@@ -36,6 +36,7 @@ namespace CompanyAPI.Controllers
             var movement = await _movementService.LogMovementAsync(movementDto);
             return CreatedAtAction(nameof(GetMovementById), new { id = movement.MovementId }, movement);
         }
+
     }
 }
 

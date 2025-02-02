@@ -22,13 +22,14 @@ namespace CompanyAPI.Services.Implementations
             {
                 MovementId = m.MovementId,
                 ItemId = m.ItemId,
-                UserId = m.UserId,
+                UserId = m.UserId, 
                 Action = m.Action,
                 QuantityChanged = m.QuantityChanged,
                 Notes = m.Notes,
                 Timestamp = m.Timestamp
             });
         }
+
 
         public async Task<InventoryMovementDto> GetMovementByIdAsync(int id)
         {
@@ -49,6 +50,11 @@ namespace CompanyAPI.Services.Implementations
 
         public async Task<InventoryMovementDto> LogMovementAsync(CreateInventoryMovementDto movementDto)
         {
+            if (string.IsNullOrEmpty(movementDto.ItemId) || string.IsNullOrEmpty(movementDto.UserId))
+            {
+                throw new ArgumentException("ItemId (Item Name) and UserId (Username) are required.");
+            }
+
             var movement = new InventoryMovement
             {
                 ItemId = movementDto.ItemId,
