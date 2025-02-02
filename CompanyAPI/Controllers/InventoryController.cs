@@ -7,7 +7,6 @@ namespace CompanyAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class InventoryController : ControllerBase
     {
         private readonly IInventoryService _inventoryService;
@@ -38,31 +37,27 @@ namespace CompanyAPI.Controllers
         public async Task<IActionResult> CreateItem([FromBody] CreateInventoryItemDto itemDto)
         {
             var item = await _inventoryService.CreateItemAsync(itemDto);
-
-            if (item == null)
-                return BadRequest("Failed to create item.");
-
             return CreatedAtAction(nameof(GetItemById), new { id = item.ItemId }, item);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateItem(int id, [FromBody] UpdateInventoryItemDto itemDto)
         {
-            var updatedItem = await _inventoryService.UpdateItemAsync(id, itemDto);
-            if (updatedItem == null)
+            var item = await _inventoryService.UpdateItemAsync(id, itemDto);
+            if (item == null)
                 return NotFound();
-            return Ok(updatedItem);
+
+            return Ok(item);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(int id)
         {
-            var deletedItem = await _inventoryService.DeleteItemAsync(id);
-
-            if (deletedItem == null)
+            var result = await _inventoryService.DeleteItemAsync(id);
+            if (!result)
                 return NotFound();
 
-            return Ok(deletedItem);
+            return NoContent();
         }
     }
 }
