@@ -74,12 +74,12 @@ namespace CompanyAPI.Services.Implementations
             };
         }
 
-        public async Task<bool> UpdateItemAsync(int id, UpdateInventoryItemDto itemDto)
+        public async Task<InventoryItemDto?> UpdateItemAsync(int id, UpdateInventoryItemDto itemDto)
         {
             var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ItemId == id);
 
             if (item == null)
-                return false;
+                return null;
 
             item.Name = itemDto.Name;
             item.Description = itemDto.Description;
@@ -89,20 +89,38 @@ namespace CompanyAPI.Services.Implementations
 
             await _context.SaveChangesAsync();
 
-            return true;
+            return new InventoryItemDto
+            {
+                ItemId = item.ItemId,
+                Name = item.Name,
+                Description = item.Description,
+                Quantity = item.Quantity,
+                Location = item.Location,
+                CreatedAt = item.CreatedAt,
+                UpdatedAt = item.UpdatedAt ?? DateTime.MinValue
+            };
         }
 
-        public async Task<bool> DeleteItemAsync(int id)
+        public async Task<InventoryItemDto?> DeleteItemAsync(int id)
         {
             var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ItemId == id);
 
             if (item == null)
-                return false;
+                return null;
 
             _context.InventoryItems.Remove(item);
             await _context.SaveChangesAsync();
 
-            return true;
+            return new InventoryItemDto
+            {
+                ItemId = item.ItemId,
+                Name = item.Name,
+                Description = item.Description,
+                Quantity = item.Quantity,
+                Location = item.Location,
+                CreatedAt = item.CreatedAt,
+                UpdatedAt = item.UpdatedAt ?? DateTime.MinValue
+            };
         }
     }
 }

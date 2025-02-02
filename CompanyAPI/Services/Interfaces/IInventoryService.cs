@@ -7,7 +7,7 @@ namespace CompanyAPI.Services.Interfaces
         Task<IEnumerable<InventoryItemDto>> GetAllItemsAsync();
         Task<InventoryItemDto> GetItemByIdAsync(int id);
         Task<InventoryItemDto> CreateItemAsync(CreateInventoryItemDto itemDto);
-        Task<bool> UpdateItemAsync(int id, UpdateInventoryItemDto itemDto);
-        Task<bool> DeleteItemAsync(int id);
+        Task<InventoryItemDto> UpdateItemAsync(int id, UpdateInventoryItemDto itemDto);
+        Task<InventoryItemDto> DeleteItemAsync(int id);
     }
 }
