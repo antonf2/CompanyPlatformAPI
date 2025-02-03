@@ -34,7 +34,8 @@ namespace CompanyAPI.Services.Implementations
         public async Task<InventoryMovementDto> GetMovementByIdAsync(int id)
         {
             var movement = await _context.InventoryMovements.FindAsync(id);
-            if (movement == null) return null;
+            if (movement == null)
+                throw new KeyNotFoundException($"Inventory movement with ID {id} not found.");
 
             return new InventoryMovementDto
             {

@@ -10,15 +10,15 @@ namespace CompanyAPI.Data.Entities
         public int ItemId { get; set; } 
         [Required]
         [StringLength(255)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         [Required]
         public int Quantity { get; set; }
 
         [StringLength(255)]
-        public string Location { get; set; }
+        public required string Location { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

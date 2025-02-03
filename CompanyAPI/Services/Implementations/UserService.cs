@@ -21,7 +21,7 @@ public class UserService : IUserService
         return users.Select(u => new UserDto(u));
     }
 
-    public async Task<UserDto> GetUserByIdAsync(int id)
+    public async Task<UserDto?> GetUserByIdAsync(int id)
     {
         var user = await _context.Users.FindAsync(id);
         return user == null ? null : new UserDto(user);
@@ -31,7 +31,7 @@ public class UserService : IUserService
     {
         if (await UserExists(userDto.Username))
         {
-            return false; // User already exists
+            return false;
         }
 
         var user = new User

@@ -9,15 +9,15 @@ public class InventoryMovement
 
     [Required]
     [StringLength(50)]
-    public string ItemId { get; set; }
+    public required string ItemId { get; set; }
 
     [Required]
     [StringLength(50)]
-    public string UserId { get; set; } 
+    public required string UserId { get; set; } 
 
     [Required]
     [StringLength(50)]
-    public string Action { get; set; }
+    public required string Action { get; set; }
 
     [Required]
     public int QuantityChanged { get; set; }

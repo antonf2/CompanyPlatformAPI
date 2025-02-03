@@ -11,20 +11,20 @@ namespace CompanyAPI.Data.Entities
 
         [Required]
         [StringLength(255)]
-        public string Username { get; set; }
+        public required string Username { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string PasswordHash { get; set; }
+        public required string PasswordHash { get; set; }
 
         [Required]
         [EmailAddress]
         [StringLength(255)]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
         [StringLength(50)]
-        public string Role { get; set; }
+        public required string Role { get; set; }
 
         [Required]
         public bool IsActive { get; set; } = true;

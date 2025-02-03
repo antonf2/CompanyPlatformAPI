@@ -33,7 +33,8 @@ namespace CompanyAPI.Services.Implementations
         public async Task<InventoryItemDto> GetItemByIdAsync(int id)
         {
             var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ItemId == id);
-            if (item == null) return null;
+            if (item == null)
+                throw new KeyNotFoundException($"Inventory item with ID {id} not found.");
 
             return new InventoryItemDto
             {

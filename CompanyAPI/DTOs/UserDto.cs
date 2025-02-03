@@ -1,4 +1,5 @@
 ﻿using CompanyAPI.Data.Entities;
+using System.ComponentModel.DataAnnotations;
 namespace CompanyAPI.DTOs
 {
     public class UserDto

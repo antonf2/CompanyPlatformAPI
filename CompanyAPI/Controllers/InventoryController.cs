@@ -1,6 +1,5 @@
 ﻿using CompanyAPI.DTOs;
 using CompanyAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyAPI.Controllers
@@ -44,7 +43,7 @@ namespace CompanyAPI.Controllers
         public async Task<IActionResult> UpdateItem(int id, [FromBody] UpdateInventoryItemDto itemDto)
         {
             var item = await _inventoryService.UpdateItemAsync(id, itemDto);
-            if (item == null)
+            if (!item)
                 return NotFound();
 
             return Ok(item);

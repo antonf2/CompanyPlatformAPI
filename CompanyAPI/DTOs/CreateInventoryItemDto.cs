@@ -1,11 +1,15 @@
-﻿namespace CompanyAPI.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CompanyAPI.DTOs
 {
 
-        public class CreateInventoryItemDto
-        {
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public int Quantity { get; set; }
-            public string Location { get; set; }
-        }
+    public class CreateInventoryItemDto
+    {
+        [Required]
+        public required string Name { get; set; }
+        [Required]
+        public required string Description { get; set; }
+        public int Quantity { get; set; }
+        public required string Location { get; set; }
+    }
 }
